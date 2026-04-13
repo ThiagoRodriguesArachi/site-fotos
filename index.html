@@ -8,7 +8,7 @@
     body {
       margin: 0;
       font-family: Arial;
-      background: #f5f5f5; /* fundo branco suave */
+      background: #f5f5f5;
       color: #000;
     }
 
@@ -17,6 +17,13 @@
       grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
       gap: 10px;
       padding: 10px;
+    }
+
+    /* 📱 celular: imagens maiores */
+    @media (max-width: 600px) {
+      #galeria {
+        grid-template-columns: repeat(2, 1fr);
+      }
     }
 
     .foto img {
@@ -69,28 +76,47 @@
     let fotos = [];
     let indexAtual = 0;
     let zoom = 1;
+    let pagina = 0;
+    const porPagina = 10; // 🔥 agora 10 por vez
 
     const modal = document.getElementById('modal');
     const img = document.getElementById('imagemModal');
+    const galeria = document.getElementById('galeria');
+
+    if (!modal || !img || !galeria) return;
 
     fetch('fotos.json')
       .then(res => res.json())
       .then(lista => {
         fotos = lista;
-
-        const galeria = document.getElementById('galeria');
-
-        fotos.forEach((foto, index) => {
-          const div = document.createElement('div');
-          div.className = 'foto';
-
-          // 🔥 otimização leve aqui
-          div.innerHTML = `<img src="fotos/${foto}" loading="lazy" decoding="async">`;
-
-          div.onclick = () => abrirModal(index);
-          galeria.appendChild(div);
-        });
+        carregarMais();
       });
+
+    function carregarMais() {
+      const inicio = pagina * porPagina;
+      const fim = inicio + porPagina;
+
+      fotos.slice(inicio, fim).forEach((foto, index) => {
+        const div = document.createElement('div');
+        div.className = 'foto';
+
+        div.innerHTML = `<img src="fotos/${foto}" loading="lazy" decoding="async">`;
+
+        div.onclick = () => abrirModal(inicio + index);
+        galeria.appendChild(div);
+      });
+
+      pagina++;
+    }
+
+    // 🔥 scroll infinito
+    window.addEventListener('scroll', () => {
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
+        if (pagina * porPagina < fotos.length) {
+          carregarMais();
+        }
+      }
+    });
 
     function abrirModal(index) {
       indexAtual = index;
@@ -104,14 +130,9 @@
     }
 
     function atualizarImagem() {
-      img.style.opacity = 0;
-
-      setTimeout(() => {
-        img.src = 'fotos/' + fotos[indexAtual];
-        document.getElementById('downloadBtn').href = img.src;
-        img.style.transform = 'scale(1)';
-        img.style.opacity = 1;
-      }, 120);
+      img.src = 'fotos/' + fotos[indexAtual];
+      document.getElementById('downloadBtn').href = img.src;
+      img.style.transform = 'scale(1)';
     }
 
     function proxima() {
