@@ -8,8 +8,8 @@
     body {
       margin: 0;
       font-family: Arial;
-      background: #111;
-      color: #fff;
+      background: #f5f5f5; /* fundo branco suave */
+      color: #000;
     }
 
     #galeria {
@@ -72,29 +72,24 @@
 
     const modal = document.getElementById('modal');
     const img = document.getElementById('imagemModal');
-    const galeria = document.getElementById('galeria');
-
-    // 🔥 proteção contra erro (IMPORTANTE)
-    if (!modal || !img || !galeria) {
-      console.error("Elementos não encontrados no HTML");
-      return;
-    }
 
     fetch('fotos.json')
       .then(res => res.json())
       .then(lista => {
         fotos = lista;
 
+        const galeria = document.getElementById('galeria');
+
         fotos.forEach((foto, index) => {
           const div = document.createElement('div');
           div.className = 'foto';
-          div.innerHTML = `<img src="fotos/${foto}">`;
+
+          // 🔥 otimização leve aqui
+          div.innerHTML = `<img src="fotos/${foto}" loading="lazy" decoding="async">`;
+
           div.onclick = () => abrirModal(index);
           galeria.appendChild(div);
         });
-      })
-      .catch(err => {
-        console.error("Erro ao carregar fotos.json", err);
       });
 
     function abrirModal(index) {
