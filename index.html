@@ -1,4 +1,6 @@
 <script>
+document.addEventListener("DOMContentLoaded", () => {
+
   let fotos = [];
   let indexAtual = 0;
   let zoom = 1;
@@ -6,7 +8,6 @@
   const modal = document.getElementById('modal');
   const img = document.getElementById('imagemModal');
 
-  // 🔥 CARREGA O JSON
   fetch('fotos.json')
     .then(res => res.json())
     .then(lista => {
@@ -55,7 +56,6 @@
     atualizarImagem();
   }
 
-  // teclado
   document.addEventListener('keydown', (e) => {
     if (modal.style.display === 'flex') {
       if (e.key === 'ArrowRight') proxima();
@@ -64,12 +64,10 @@
     }
   });
 
-  // fechar clicando fora
   modal.addEventListener('click', (e) => {
     if (e.target.id === 'modal') fecharModal();
   });
 
-  // zoom
   modal.addEventListener('wheel', (e) => {
     e.preventDefault();
     zoom += e.deltaY * -0.001;
@@ -77,7 +75,6 @@
     img.style.transform = `scale(${zoom})`;
   });
 
-  // swipe mobile
   let startX = 0;
 
   modal.addEventListener('touchstart', (e) => {
@@ -90,4 +87,6 @@
     if (startX - endX > 50) proxima();
     if (endX - startX > 50) anterior();
   });
+
+});
 </script>
