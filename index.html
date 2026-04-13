@@ -18,13 +18,8 @@ body {
   flex-direction: column;
 }
 
-.foto {
-  width: 100%;
-}
-
 .foto img {
   width: 100%;
-  height: auto;
   display: block;
 }
 
@@ -45,25 +40,37 @@ body {
 
 #modal img {
   width: 100%;
-  height: auto;
-  max-height: 90%;
+  max-height: 85%;
+}
+
+/* BOTÃO FECHAR */
+.fechar {
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  background: rgba(80,80,80,0.8);
+  color: white;
+  font-size: 22px;
+  padding: 8px 14px;
+  border-radius: 50%;
 }
 
 /* CONTROLES */
 .controles {
   position: fixed;
-  bottom: 10px;
+  bottom: 15px;
   width: 100%;
   display: flex;
   justify-content: space-around;
 }
 
+/* BOTÕES */
 .btn {
-  background: white;
-  color: black;
+  background: rgba(120,120,120,0.8); /* cinza */
+  color: white;
   padding: 12px 16px;
-  border-radius: 8px;
-  font-size: 16px;
+  border-radius: 10px;
+  font-size: 18px;
 }
 </style>
 </head>
@@ -73,11 +80,13 @@ body {
 <div id="galeria"></div>
 
 <div id="modal">
+  <div class="fechar" onclick="fechar()">✕</div>
+
   <img id="imagemModal">
 
   <div class="controles">
     <div class="btn" onclick="anterior()">◀</div>
-    <a id="downloadBtn" class="btn" download>Baixar</a>
+    <a id="downloadBtn" class="btn" download>⬇</a>
     <div class="btn" onclick="proxima()">▶</div>
   </div>
 </div>
@@ -86,7 +95,7 @@ body {
 let fotos = [];
 let indexAtual = 0;
 let pagina = 0;
-const porPagina = 5; // 🔥 ultra leve
+const porPagina = 5;
 
 const galeria = document.getElementById('galeria');
 const modal = document.getElementById('modal');
@@ -105,22 +114,21 @@ function carregarMais() {
 
   fotos.slice(inicio, fim).forEach((foto, i) => {
     const div = document.createElement('div');
-    div.className = 'foto';
 
     const imagem = document.createElement('img');
     imagem.src = 'fotos/' + foto;
     imagem.loading = "lazy";
 
     div.appendChild(imagem);
-
     div.onclick = () => abrirModal(inicio + i);
+
     galeria.appendChild(div);
   });
 
   pagina++;
 }
 
-/* scroll simples */
+/* scroll */
 window.addEventListener('scroll', () => {
   if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
     if (pagina * porPagina < fotos.length) {
@@ -166,11 +174,6 @@ modal.addEventListener('touchend', e => {
 
   if (startX - endX > 50) proxima();
   if (endX - startX > 50) anterior();
-});
-
-/* fechar tocando */
-modal.addEventListener('click', (e) => {
-  if (e.target.id === 'modal') fechar();
 });
 </script>
 
