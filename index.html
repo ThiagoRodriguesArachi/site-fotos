@@ -22,10 +22,12 @@ body {
   width: 100%;
 }
 
+/* 🔥 borda branca entre fotos */
 .foto img {
   width: 100%;
   height: auto;
   display: block;
+  border-bottom: 4px solid #fff;
 }
 
 /* MODAL */
@@ -47,6 +49,18 @@ body {
   width: 100%;
   height: auto;
   max-height: 90%;
+}
+
+/* ❌ botão fechar */
+.fechar {
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  background: rgba(100,100,100,0.7);
+  color: white;
+  font-size: 22px;
+  padding: 8px 14px;
+  border-radius: 50%;
 }
 
 /* CONTROLES */
@@ -73,6 +87,9 @@ body {
 <div id="galeria"></div>
 
 <div id="modal">
+  <!-- 🔥 BOTÃO VOLTAR -->
+  <div class="fechar" onclick="fechar()">✕</div>
+
   <img id="imagemModal">
 
   <div class="controles">
@@ -86,7 +103,7 @@ body {
 let fotos = [];
 let indexAtual = 0;
 let pagina = 0;
-const porPagina = 5; // 🔥 ultra leve
+const porPagina = 5;
 
 const galeria = document.getElementById('galeria');
 const modal = document.getElementById('modal');
@@ -120,7 +137,6 @@ function carregarMais() {
   pagina++;
 }
 
-/* scroll simples */
 window.addEventListener('scroll', () => {
   if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
     if (pagina * porPagina < fotos.length) {
@@ -154,7 +170,6 @@ function anterior() {
   atualizar();
 }
 
-/* swipe */
 let startX = 0;
 
 modal.addEventListener('touchstart', e => {
@@ -168,7 +183,6 @@ modal.addEventListener('touchend', e => {
   if (endX - startX > 50) anterior();
 });
 
-/* fechar tocando */
 modal.addEventListener('click', (e) => {
   if (e.target.id === 'modal') fechar();
 });
