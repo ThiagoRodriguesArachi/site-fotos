@@ -1,0 +1,93 @@
+<script>
+  let fotos = [];
+  let indexAtual = 0;
+  let zoom = 1;
+
+  const modal = document.getElementById('modal');
+  const img = document.getElementById('imagemModal');
+
+  // 🔥 CARREGA O JSON
+  fetch('fotos.json')
+    .then(res => res.json())
+    .then(lista => {
+      fotos = lista;
+
+      const galeria = document.getElementById('galeria');
+
+      fotos.forEach((foto, index) => {
+        const div = document.createElement('div');
+        div.className = 'foto';
+        div.innerHTML = `<img src="fotos/${foto}">`;
+        div.onclick = () => abrirModal(index);
+        galeria.appendChild(div);
+      });
+    });
+
+  function abrirModal(index) {
+    indexAtual = index;
+    zoom = 1;
+    modal.style.display = 'flex';
+    atualizarImagem();
+  }
+
+  function fecharModal() {
+    modal.style.display = 'none';
+  }
+
+  function atualizarImagem() {
+    img.style.opacity = 0;
+
+    setTimeout(() => {
+      img.src = 'fotos/' + fotos[indexAtual];
+      document.getElementById('downloadBtn').href = img.src;
+      img.style.transform = 'scale(1)';
+      img.style.opacity = 1;
+    }, 120);
+  }
+
+  function proxima() {
+    indexAtual = (indexAtual + 1) % fotos.length;
+    atualizarImagem();
+  }
+
+  function anterior() {
+    indexAtual = (indexAtual - 1 + fotos.length) % fotos.length;
+    atualizarImagem();
+  }
+
+  // teclado
+  document.addEventListener('keydown', (e) => {
+    if (modal.style.display === 'flex') {
+      if (e.key === 'ArrowRight') proxima();
+      if (e.key === 'ArrowLeft') anterior();
+      if (e.key === 'Escape') fecharModal();
+    }
+  });
+
+  // fechar clicando fora
+  modal.addEventListener('click', (e) => {
+    if (e.target.id === 'modal') fecharModal();
+  });
+
+  // zoom
+  modal.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    zoom += e.deltaY * -0.001;
+    zoom = Math.min(Math.max(1, zoom), 4);
+    img.style.transform = `scale(${zoom})`;
+  });
+
+  // swipe mobile
+  let startX = 0;
+
+  modal.addEventListener('touchstart', (e) => {
+    startX = e.touches[0].clientX;
+  });
+
+  modal.addEventListener('touchend', (e) => {
+    let endX = e.changedTouches[0].clientX;
+
+    if (startX - endX > 50) proxima();
+    if (endX - startX > 50) anterior();
+  });
+</script>
